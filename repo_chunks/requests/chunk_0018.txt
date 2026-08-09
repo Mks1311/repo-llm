@@ -1,0 +1,12 @@
+FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\.github\ISSUE_TEMPLATE.md
+TYPE: markdown
+START_LINE: 7
+END_LINE: 10
+CHUNK_ID: 18
+
+--------------------------------------------------------------------------------
+
+## Actual Result
+
+What happened instead.
+

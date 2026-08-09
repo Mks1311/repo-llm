@@ -1,0 +1,12 @@
+FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\.github\ISSUE_TEMPLATE\Bug_report.md
+TYPE: markdown
+START_LINE: 13
+END_LINE: 16
+CHUNK_ID: 25
+
+--------------------------------------------------------------------------------
+
+## Actual Result
+
+<!-- What happened instead. -->
+

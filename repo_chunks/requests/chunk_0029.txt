@@ -1,0 +1,18 @@
+FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\.github\ISSUE_TEMPLATE\Feature_request.md
+TYPE: markdown
+START_LINE: 1
+END_LINE: 10
+CHUNK_ID: 29
+
+--------------------------------------------------------------------------------
+
+---
+name: Feature request
+about: Suggest an idea for this project
+labels:
+- "Feature Request"
+- "actions/autoclose-feat"
+
+---
+
+Requests is not accepting feature requests at this time.

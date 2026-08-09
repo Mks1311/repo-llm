@@ -1,0 +1,18 @@
+FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\README.md
+TYPE: markdown
+START_LINE: 30
+END_LINE: 39
+CHUNK_ID: 3
+
+--------------------------------------------------------------------------------
+
+## Installing Requests and Supported Versions
+
+Requests is available on PyPI:
+
+```console
+$ python -m pip install requests
+```
+
+Requests officially supports Python 3.10+.
+

@@ -1,0 +1,15 @@
+FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\.github\ISSUE_TEMPLATE.md
+TYPE: markdown
+START_LINE: 11
+END_LINE: 17
+CHUNK_ID: 19
+
+--------------------------------------------------------------------------------
+
+## Reproduction Steps
+
+```python
+import requests
+
+```
+
