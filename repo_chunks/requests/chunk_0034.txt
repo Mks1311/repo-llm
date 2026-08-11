@@ -1,9 +1,0 @@
-FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\docs\conf.py
-TYPE: python
-START_LINE: 359
-END_LINE: 385
-CHUNK_ID: 34
-
---------------------------------------------------------------------------------
-
-= ["search.html"] # The depth of the table of contents in toc.ncx. # epub_tocdepth = 3 # Allow duplicate toc entries. # epub_tocdup = True # Choose between 'default' and 'includehidden'. # epub_tocscope = 'default' # Fix unsupported image types using the Pillow. # epub_fix_images = False # Scale large images. # epub_max_image_width = 0 # How to display URL addresses: 'footnote', 'no', or 'inline'. # epub_show_urls = 'inline' # If false, no index is generated. # epub_use_index = True intersphinx_mapping = { "python": ("https://docs.python.org/3/", None), "urllib3": ("https://urllib3.readthedocs.io/en/latest", None), }

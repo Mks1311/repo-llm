@@ -1,9 +1,0 @@
-FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\src\requests\adapters.py
-TYPE: python
-START_LINE: 715
-END_LINE: 748
-CHUNK_ID: 42
-
---------------------------------------------------------------------------------
-
-# TODO: Remove this in 3.0.0: see #2811 if not isinstance(e.reason, NewConnectionError): raise ConnectTimeout(e, request=request) if isinstance(e.reason, ResponseError): raise RetryError(e, request=request) if isinstance(e.reason, _ProxyError): raise ProxyError(e, request=request) if isinstance(e.reason, _SSLError): # This branch is for urllib3 v1.22 and later. raise SSLError(e, request=request) raise ConnectionError(e, request=request) except ClosedPoolError as e: raise ConnectionError(e, request=request) except _ProxyError as e: raise ProxyError(e) except (_SSLError, _HTTPError) as e: if isinstance(e, _SSLError): # This branch is for urllib3 versions earlier than v1.22 raise SSLError(e, request=request) elif isinstance(e, ReadTimeoutError): raise ReadTimeout(e, request=request) elif isinstance(e, _InvalidHeader): raise InvalidHeader(e, request=request) else: raise return self.build_response(request, resp)

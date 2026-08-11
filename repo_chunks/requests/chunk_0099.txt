@@ -1,9 +1,0 @@
-FILE: C:\Users\excma\Desktop\projects\ai\repo-llm\local_repo\requests\tests\test_hooks.py
-TYPE: python
-START_LINE: 1
-END_LINE: 22
-CHUNK_ID: 99
-
---------------------------------------------------------------------------------
-
-import pytest from requests import hooks def hook(value): return value[1:] @pytest.mark.parametrize( "hooks_list, result", ( (hook, "ata"), ([hook, lambda x: None, hook], "ta"), ), ) def test_hooks(hooks_list, result): assert hooks.dispatch_hook("response", {"response": hooks_list}, "Data") == result def test_default_hooks(): assert hooks.default_hooks() == {"response": []}

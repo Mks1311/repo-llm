@@ -56,3 +56,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+chroma_db/
+local_repo/
+repo_chunks/
