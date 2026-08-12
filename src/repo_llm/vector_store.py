@@ -49,6 +49,7 @@ def save_chunks_to_vector_store(chunks_path):
                 "type": chunk["type"],
                 "start_line": chunk["start_line"],
                 "end_line": chunk["end_line"],
+                "file_name": Path(chunk["file_path"]).name,
             }
             for chunk in chunks
         ]

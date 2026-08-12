@@ -60,3 +60,4 @@ Thumbs.db
 chroma_db/
 local_repo/
 repo_chunks/
+bm25_index/
