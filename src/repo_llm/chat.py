@@ -25,6 +25,8 @@ def retrieve_context(question, repo_name, n_results_per_method=3):
 def start_chat(repo_name):
     print(f"\nAsk questions about '{repo_name}' (type 'exit' or 'quit' to stop).\n")
 
+    history = []
+
     while True:
         question = input("You: ").strip()
 
@@ -41,5 +43,14 @@ def start_chat(repo_name):
             print("AI: I couldn't find any relevant context for that question.\n")
             continue
 
-        answer = generate_answer(question, context_chunks)
+        answer, citations = generate_answer(question, context_chunks, history)
         print(f"AI: {answer}\n")
+
+        if citations:
+            print("Sources:")
+            for citation in citations:
+                print(
+                    f"  [{citation['id']}] {citation['file_path']} "
+                    f"(lines {citation['start_line']}-{citation['end_line']})"
+                )
+            print()
