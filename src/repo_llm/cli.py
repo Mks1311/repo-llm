@@ -1,4 +1,5 @@
 from repo_llm.bm25_index import save_chunks_to_bm25_index
+from repo_llm.chat import start_chat
 from repo_llm.chunking.pipeline import run_chunking_pipeline
 from repo_llm.file_discovery import discover_source_files
 from repo_llm.repo_cloner import clone_repository
@@ -18,6 +19,9 @@ def start_cli():
     chunks_path = run_chunking_pipeline(file_paths, repo_url)
     save_chunks_to_vector_store(chunks_path)
     save_chunks_to_bm25_index(chunks_path)
+
+    repo_name = chunks_path.name
+    start_chat(repo_name)
 
 
 if __name__ == "__main__":

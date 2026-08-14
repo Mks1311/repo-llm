@@ -9,10 +9,12 @@ def test():
 
     results = hybrid_search(query, method, repo_name)
 
-    print(f"\nHybrid (RRF) search results for '{query}' (method={method}, repo={repo_name}):\n")
+    print(f"\nHybrid (RRF + reranker) search results for '{query}' (method={method}, repo={repo_name}):\n")
     for rank, result in enumerate(results, start=1):
+        rerank_score = result.get("rerank_score")
+        rerank_part = f"rerank_score={rerank_score:.4f} " if rerank_score is not None else ""
         print(
-            f"{rank}. [{result['id']}] rrf_score={result['score']:.4f} "
+            f"{rank}. [{result['id']}] {rerank_part}rrf_score={result['score']:.4f} "
             f"(vector_rank={result['vector_rank']}, bm25_rank={result['bm25_rank']})"
         )
         print(f"   {result['metadata']['file_path']}")
