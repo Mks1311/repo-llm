@@ -96,13 +96,39 @@ A few things that came out of actually building this, not just reading about RAG
 
 ## Evaluation
 
-No formal eval harness yet — these are real runs against [psf/requests](https://github.com/psf/requests) during development, kept here as a starting point for a proper benchmark later.
+No persisted eval script in the repo yet (that's still on the roadmap) — but the numbers below are from a real run, not estimates. Methodology: 10 hand-written queries against [psf/requests](https://github.com/psf/requests), each with a known-correct source file (e.g. "HTTP basic authentication" → `auth.py`), run against `ast` chunks, top-5 results, comparing vector-only, BM25-only, and hybrid+rerank.
 
-| Query | Vector search | BM25 | Hybrid (RRF) + rerank | Notes |
-|---|---|---|---|---|
-| `session cookies` | Ranked `sessions.py`/`cookies.py` chunks highly on meaning | Ranked test files highest on raw term overlap | Best of both — `sessions.py` chunk rose to #1 with support from both rankers | Good example of hybrid actually improving over either alone |
-| `api.py` | Ranked `api.py` chunks #1 (docstring happens to repeat the module name) | Found nothing until file paths were added to the BM25 tokens; correct after | Both agree, `api.py` docstring chunk ranks #1 | Filename lookup needed a deliberate fix (path-aware BM25 tokens), not automatic |
-| `moddels.py` (typo) | Top result was unrelated (`packages.py`) | Scored 0.0 everywhere — no literal token match | Still wrong — fusing two wrong rankings doesn't produce a right one | Neither lexical nor embedding search handles typos; this is an identity-lookup problem, not a relevance problem — motivates giving the LLM a search tool it can query with a corrected term |
+**Per-query rank of the first correct-file hit** (lower is better, "miss" = not in top 5):
+
+| Query | Vector | BM25 | Hybrid + rerank |
+|---|---|---|---|
+| cookies in a session | 1 | 1 | 3 |
+| sending a GET request | 4 | 5 | 3 |
+| HTTP basic auth | 2 | 1 | 1 |
+| session redirects | 1 | 1 | 1 |
+| connection pooling / adapters | 1 | 1 | 1 |
+| custom exceptions | miss | miss | 4 |
+| the Response object | 1 | 4 | 1 |
+| hooks | 1 | 1 | 1 |
+| preparing a request body | 1 | 2 | 1 |
+| proxy configuration | 2 | 1 | 1 |
+
+**Aggregate (Hit@5 / Mean Reciprocal Rank):**
+
+| Method | Hit@5 | MRR |
+|---|---|---|
+| Vector only | 90.0% | 0.725 |
+| BM25 only | 90.0% | 0.695 |
+| **Hybrid (RRF) + rerank** | **100.0%** | **0.792** |
+
+Hybrid+rerank improved Hit@5 by **+11.1%** and MRR by **+9.2%** over vector-only, and Hit@5 by **+11.1%** / MRR by **+13.9%** over BM25-only. The clearest win: "custom exceptions" was a complete miss for both single-method approaches and only surfaced once the two were fused. Worth being honest that hybrid wasn't strictly better everywhere — it dropped the "cookies in a session" query from rank 1 to rank 3, a reminder that fusion trades off individual-query wins for better aggregate performance, it doesn't dominate on every query.
+
+Separately, qualitative findings from earlier manual testing:
+
+| Query | Behavior | Notes |
+|---|---|---|
+| `api.py` | BM25 found nothing until file paths were added to its tokens; vector search ranked it #1 immediately (the docstring happens to repeat the module name) | Filename lookup needed a deliberate fix (path-aware BM25 tokens), not automatic |
+| `moddels.py` (typo) | Vector's top result was unrelated (`packages.py`); BM25 scored 0.0 everywhere — no literal token match | Neither lexical nor embedding search handles typos; this is an identity-lookup problem, not a relevance problem — motivates giving the LLM a search tool it can query with a corrected term |
 
 ## Roadmap
 
