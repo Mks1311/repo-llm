@@ -19,14 +19,17 @@ from repo_llm.llm_client import GROQ_MODEL, _get_client, _trim_history
 SYSTEM_PROMPT = (
     "You are a helpful assistant answering questions about a code repository. "
     "You cannot see the code directly — use search_codebase to find relevant "
-    "code, and read_file to read more of a file you found. Results include "
-    "their file path; cite the file you used in your answer. Once you have "
-    "enough to answer, answer — don't keep calling tools. If the results "
-    "don't contain the answer, say you don't know."
+    "code, and read_file to read more of a file you found. If a filename "
+    "might be misspelled, or a search returns nothing useful, call list_files "
+    "once to see what actually exists and work from those real names — do not "
+    "repeat a search that already failed. Results include their file path; "
+    "cite the file you used in your answer. Once you have enough to answer, "
+    "answer — don't keep calling tools. If the results don't contain the "
+    "answer, say you don't know."
 )
 
 # Stops a misbehaving model from looping on tool calls forever.
-MAX_TOOL_ROUNDS = 6
+MAX_TOOL_ROUNDS = 8
 
 
 def to_groq_tool(mcp_tool):
