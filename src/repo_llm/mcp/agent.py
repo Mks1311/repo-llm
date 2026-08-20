@@ -24,12 +24,17 @@ SYSTEM_PROMPT = (
     "once to see what actually exists and work from those real names — do not "
     "repeat a search that already failed. Results include their file path; "
     "cite the file you used in your answer. Once you have enough to answer, "
-    "answer — don't keep calling tools. If the results don't contain the "
-    "answer, say you don't know."
+    "answer — don't keep calling tools. You have very few tool calls "
+    "available, so prefer answering from what you already have over "
+    "gathering more. For a question like 'what is X.py', reading the top of "
+    "the file is enough — do not survey every class in it. If the results "
+    "don't contain the answer, say you don't know."
 )
 
-# Stops a misbehaving model from looping on tool calls forever.
-MAX_TOOL_ROUNDS = 8
+# Stops a misbehaving model from looping on tool calls forever. Every round
+# resends the whole conversation, so each extra round costs real tokens.
+# The last round is spent answering, so this allows 5 rounds of tool calls.
+MAX_TOOL_ROUNDS = 6
 
 
 def to_groq_tool(mcp_tool):
@@ -62,12 +67,22 @@ async def answer_with_tools(question, history, session):
         user_message,
     ]
 
-    for _ in range(MAX_TOOL_ROUNDS):
+    for round_number in range(MAX_TOOL_ROUNDS):
+        # On the final round, offer no tools at all. The model then has to
+        # answer from what it already gathered, instead of spending its last
+        # turn on another search and leaving the question unanswered.
+        last_round = round_number == MAX_TOOL_ROUNDS - 1
+        if last_round:
+            messages.append({
+                "role": "user",
+                "content": "Answer now, using what you have already found.",
+            })
+
         try:
             completion = client.chat.completions.create(
                 model=GROQ_MODEL,
                 messages=messages,
-                tools=groq_tools,
+                **({} if last_round else {"tools": groq_tools}),
             )
         except BadRequestError as e:
             # The model invented arguments that don't fit the tool's schema,

@@ -18,6 +18,7 @@ from repo_llm.search.hybrid_search import hybrid_search
 # Chunking methods to search: code and docs.
 SEARCH_METHODS = ("ast", "markdown")
 RESULTS_PER_METHOD = 3
+FILTERED_RESULTS_PER_METHOD = 15
 
 # Tool results are fed back into the conversation, so cap them to stay
 # under the LLM's tokens-per-minute limit.
@@ -32,25 +33,45 @@ mcp = MCPServer("repo-llm")
 
 
 @mcp.tool()
-def search_codebase(query: str) -> str:
+def search_codebase(query: str, file_path: str = "") -> str:
     """Search the indexed code repository for snippets relevant to a query.
 
     Use this whenever you need to see actual code or documentation to answer
     a question about the repository. Pass a short, descriptive search query
     (e.g. "how sessions handle cookies"), not a filename alone.
+
+    file_path is optional: pass it to restrict results to a single file, using
+    a path as returned by list_files or by an earlier search.
     """
     repo_name = os.environ.get("REPO_LLM_REPO")
     if not repo_name:
         return "Error: REPO_LLM_REPO is not set, so there is no indexed repo to search."
 
+    # Widen the net when filtering, or the file we want may not survive it.
+    n_results = FILTERED_RESULTS_PER_METHOD if file_path else RESULTS_PER_METHOD
+
     chunks = []
     for method in SEARCH_METHODS:
         try:
             chunks.extend(
-                hybrid_search(query, method, repo_name, n_results=RESULTS_PER_METHOD)
+                hybrid_search(query, method, repo_name, n_results=n_results)
             )
         except Exception as e:
             return f"Error searching '{method}' chunks: {e}"
+
+    if file_path:
+        needle = file_path.replace("\\", "/").lower()
+        chunks = [
+            chunk for chunk in chunks
+            if needle in chunk["metadata"]["file_path"].replace("\\", "/").lower()
+        ]
+        if not chunks:
+            return (
+                f"No matches for '{query}' inside {file_path}. "
+                "Use read_file to read that file directly, or search without "
+                "file_path to search the whole repo."
+            )
+        return _format_results(chunks)
 
     if not chunks:
         return f"No results found for query: {query}"
