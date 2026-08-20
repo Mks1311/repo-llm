@@ -4,7 +4,7 @@ from groq import Groq
 
 load_dotenv()
 
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 
 SYSTEM_PROMPT = (
     "You are a helpful assistant answering questions about a codebase. "

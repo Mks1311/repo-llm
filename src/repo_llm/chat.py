@@ -1,4 +1,6 @@
 from repo_llm.llm_client import generate_answer
+from repo_llm.mcp.agent import answer_with_tools
+from repo_llm.mcp.client import connect
 from repo_llm.search.hybrid_search import hybrid_search
 
 CHUNKING_METHODS = ("ast", "markdown")
@@ -54,3 +56,37 @@ def start_chat(repo_name):
                     f"(lines {citation['start_line']}-{citation['end_line']})"
                 )
             print()
+
+
+async def start_mcp_chat(repo_name):
+    """
+    Same chat, but the LLM decides when to search instead of every question
+    being preceded by a fixed retrieval step. Search is exposed as an MCP
+    tool, so the session stays open for the whole conversation.
+    """
+    print(f"\nAsk questions about '{repo_name}' (type 'exit' or 'quit' to stop).")
+    print("The AI will search the codebase on its own when it needs to.\n")
+
+    history = []
+
+    async with connect(repo_name) as session:
+        tools = (await session.list_tools()).tools
+        print(f"Connected to MCP server. Tools: {[tool.name for tool in tools]}\n")
+
+        while True:
+            question = input("You: ").strip()
+
+            if question.lower() in ("exit", "quit"):
+                print("Goodbye!")
+                break
+
+            if not question:
+                continue
+
+            # Keep the session alive if one question fails (bad model name,
+            # rate limit, ...) instead of tearing down the whole chat.
+            try:
+                answer = await answer_with_tools(question, history, session)
+                print(f"AI: {answer}\n")
+            except Exception as e:
+                print(f"AI: [error] {type(e).__name__}: {e}\n")
